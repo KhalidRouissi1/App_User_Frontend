@@ -1,0 +1,56 @@
+name: Deploy to AWS EC2
+
+on:
+  push:
+    branches:
+      - main  # This will trigger the action on pushes to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+      - name: Add EC2 Host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H 13.60.199.116 >> ~/.ssh/known_hosts
+
+      - name: Deploy to EC2
+        run: |
+          ssh ubuntu@13.60.199.116 << 'EOF'
+          set -x  # Enable debugging
+          
+          # Check if the directory exists; if not, clone the repository
+          if [ ! -d "/var/www/dev-app/front" ]; then
+            git clone https://github.com/isslemziedi/FrontEnd_PI_S0 /var/www/dev-app/front
+          fi
+
+          # Navigate to the application directory
+          cd /var/www/dev-app/front
+
+          # Pull the latest changes
+          git pull origin main
+
+          # Install dependencies (if using npm)
+          npm install
+
+          # Build the Next.js app
+          npm run build
+
+          # Start the Next.js server in the background
+          nohup npm start > /var/www/dev-app/front/logs.log 2>&1 &
+          EOF
+
+      - name: Reload Nginx
+        run: |
+          ssh ubuntu@13.60.199.116 << 'EOF'
+          sudo systemctl reload nginx
+          EOF
