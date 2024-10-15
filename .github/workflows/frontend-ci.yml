@@ -25,7 +25,7 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh ubuntu@13.60.199.116 << 'EOF'
+          ssh ubuntu@16.171.29.59 << 'EOF'
           set -x  # Enable debugging
           
           # Check if the directory exists; if not, clone the repository
