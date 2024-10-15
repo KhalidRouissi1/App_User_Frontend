@@ -40,7 +40,6 @@ jobs:
           cd /var/www/dev-app/front/nextjs_front-master
 
           # Pull the latest changes from the main branch
-          git reset --hard  # Reset in case of any conflicts
           git pull origin main
 
           # Install dependencies (npm)
@@ -49,8 +48,13 @@ jobs:
           # Build the app for production
           npm run build
 
-          # Start the Next.js application in production mode
-          npm start  # This runs the app in production mode
+          # Install PM2 if not installed
+          if ! command -v pm2 &> /dev/null; then
+            sudo npm install -g pm2
+          fi
+
+          # Start the Next.js application with PM2
+          pm2 start npm --name "nextjs-app" -- run start
 
           # Optionally, tail your app logs if you have set up logging
           # tail -f /var/www/dev-app/front/nextjs_front-master/logs/*.log || echo "No log files found"
