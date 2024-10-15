@@ -43,7 +43,7 @@ jobs:
           npm install
 
           # Start the Next.js server in development mode (you can remove this if you want production)
-          nohup npm run dev -- --host 0.0.0.0 --port 3000 > /var/www/dev-app/front/logs.log 2>&1 &
+          nohup npm run dev -- --host 0.0.0.0 --port 3000 > /var/www/dev-app/front/nextjs_front-master/logs.log 2>&1 &
           EOF
 
       - name: Reload Nginx
