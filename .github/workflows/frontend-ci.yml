@@ -27,7 +27,10 @@ jobs:
         run: |
           ssh ubuntu@16.171.29.59 << 'EOF'
           set -x  # Enable debugging
-          
+
+          # Kill any process running on port 3000 to avoid conflicts
+          sudo lsof -t -i:3000 | xargs kill -9 || echo "No process using port 3000"
+
           # Check if the directory exists; if not, clone the repository
           if [ ! -d "/var/www/dev-app/front" ]; then
             git clone https://github.com/isslemziedi/FrontEnd_PI_S0 /var/www/dev-app/front
@@ -36,14 +39,21 @@ jobs:
           # Navigate to the application directory
           cd /var/www/dev-app/front/nextjs_front-master
 
-          # Pull the latest changes
+          # Pull the latest changes from the main branch
           git pull origin main
 
           # Install dependencies (if using npm)
           npm install
 
-          # Start the Next.js server in development mode (you can remove this if you want production)
-          nohup npm run dev -- --host 0.0.0.0 --port 3000 > /var/www/dev-app/front/nextjs_front-master/logs.log 2>&1 &
+          # Install pm2 globally if not already installed
+          sudo npm install -g pm2
+
+          # Start the Next.js server with pm2
+          pm2 start npm --name "next-app" -- run dev -- --host 0.0.0.0 --port 3000
+
+          # Display the logs to the GitHub Actions output
+          pm2 logs
+
           EOF
 
       - name: Reload Nginx
