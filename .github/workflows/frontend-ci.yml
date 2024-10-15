@@ -21,9 +21,9 @@ jobs:
       - name: Add EC2 Host to known_hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H 13.60.163.228 >> ~/.ssh/known_hosts
+          ssh-keyscan -H <your-ec2-ip> >> ~/.ssh/known_hosts
 
-            - name: Deploy to EC2
+      - name: Deploy to EC2
         run: |
           ssh ubuntu@<your-ec2-ip> << 'EOF'
           set -x  # Enable debugging
@@ -49,8 +49,8 @@ jobs:
           # Build the app for production
           npm run build
 
-          # Start the Next.js application
-          npm start  # This will run the app in production mode
+          # Start the Next.js application in production mode
+          npm start  # This runs the app in production mode
 
           # Optionally, tail your app logs if you have set up logging
           # tail -f /var/www/dev-app/front/nextjs_front-master/logs/*.log || echo "No log files found"
@@ -58,6 +58,6 @@ jobs:
 
       - name: Reload Nginx
         run: |
-          ssh ubuntu@13.60.163.228 << 'EOF'
+          ssh ubuntu@<your-ec2-ip> << 'EOF'
           sudo systemctl reload nginx
           EOF
