@@ -34,7 +34,7 @@ jobs:
           fi
 
           # Navigate to the application directory
-          cd /var/www/dev-app/front
+          cd /var/www/dev-app/front/nextjs_front-master
 
           # Pull the latest changes
           git pull origin main
