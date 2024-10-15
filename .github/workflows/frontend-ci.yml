@@ -46,8 +46,8 @@ jobs:
             sudo npm install -g pm2
           fi
 
-          # Start the Next.js application with PM2 on port 3000
-          pm2 start npm --name "nextjs-app" -- run start -- --port 3000
+          # Start the Next.js application in development mode with PM2 on port 3000
+          pm2 start npm --name "nextjs-app" -- run dev -- --port 3000
 
           # Optionally, tail your app logs if you have set up logging
           # tail -f /var/www/dev-app/front/nextjs_front-master/logs/*.log || echo "No log files found"
