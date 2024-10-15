@@ -21,20 +21,15 @@ jobs:
       - name: Add EC2 Host to known_hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H 13.60.163.228 | tee -a ~/.ssh/known_hosts
+          ssh-keyscan -H <your-ec2-ip> | tee -a ~/.ssh/known_hosts
 
       - name: Deploy to EC2
         run: |
-          ssh ubuntu@13.60.163.228<< 'EOF'
+          ssh ubuntu@<your-ec2-ip> << 'EOF'
           set -x  # Enable debugging
 
           # Kill any process running on port 3000 to avoid conflicts
           sudo lsof -t -i:3000 | xargs kill -9 || echo "No process using port 3000"
-
-          # Check if the directory exists; if not, clone the repository
-          if [ ! -d "/var/www/dev-app/front" ]; then
-            git clone https://github.com/isslemziedi/FrontEnd_PI_S0 /var/www/dev-app/front
-          fi
 
           # Navigate to the application directory
           cd /var/www/dev-app/front/nextjs_front-master
@@ -43,25 +38,14 @@ jobs:
           git pull origin main
 
           # Install dependencies (npm)
-          npm install
+          npm run dev
 
-          # Build the app for production
-          npm run build
-
-          # Install PM2 if not installed
-          if ! command -v pm2 &> /dev/null; then
-            sudo npm install -g pm2
-          fi
-
-          # Start the Next.js application with PM2
-          pm2 start npm --name "nextjs-app" -- run start
-
-          # Optionally, tail your app logs if you have set up logging
-          # tail -f /var/www/dev-app/front/nextjs_front-master/logs/*.log || echo "No log files found"
+          # Start the Next.js application
+          npm start  # This runs the app in production mode
           EOF
 
       - name: Reload Nginx
         run: |
-          ssh ubuntu@13.60.163.228 << 'EOF'
+          ssh ubuntu@<your-ec2-ip> << 'EOF'
           sudo systemctl reload nginx
           EOF
