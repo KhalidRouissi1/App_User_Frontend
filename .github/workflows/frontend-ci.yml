@@ -28,8 +28,9 @@ jobs:
           ssh ubuntu@13.60.163.228 << 'EOF'
           set -x  # Enable debugging
 
-          # Kill any process running on port 3000 to avoid conflicts
+          # Kill any process running on ports 3000 and 3001 to avoid conflicts
           sudo lsof -t -i:3000 | xargs kill -9 || echo "No process using port 3000"
+          sudo lsof -t -i:3001 | xargs kill -9 || echo "No process using port 3001"
 
           # Navigate to the application directory
           cd /var/www/dev-app/front/nextjs_front-master
@@ -38,10 +39,18 @@ jobs:
           git pull origin main
 
           # Install dependencies (npm)
-          npm run dev
+          npm install
 
-          # Start the Next.js application
-          npm start  # This runs the app in production mode
+          # Install PM2 if not installed
+          if ! command -v pm2 &> /dev/null; then
+            sudo npm install -g pm2
+          fi
+
+          # Start the Next.js application with PM2 on port 3000
+          pm2 start npm --name "nextjs-app" -- run start -- --port 3000
+
+          # Optionally, tail your app logs if you have set up logging
+          # tail -f /var/www/dev-app/front/nextjs_front-master/logs/*.log || echo "No log files found"
           EOF
 
       - name: Reload Nginx
