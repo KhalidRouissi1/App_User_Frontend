@@ -48,6 +48,6 @@ jobs:
 
       - name: Reload Nginx
         run: |
-          ssh ubuntu@13.60.199.116 << 'EOF'
+          ssh ubuntu@16.171.29.59 << 'EOF'
           sudo systemctl reload nginx
           EOF
