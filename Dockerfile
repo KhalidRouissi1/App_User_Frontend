@@ -1,40 +1,21 @@
-name: Deploy Frontend
+# Dockerfile for Next.js frontend
 
-on:
-  push:
-    branches:
-      - main
+FROM node:18-alpine
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
+WORKDIR /app
 
-    steps:
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+# Copy package.json and package-lock.json
+COPY package.json ./
+COPY package-lock.json ./
 
-      - name: Add EC2 Host to known_hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H 13.60.80.252 | tee -a ~/.ssh/known_hosts
+# Install dependencies
+RUN npm install
 
-      - name: Deploy to EC2
-        run: |
-          ssh ubuntu@13.60.80.252 << 'EOF'
-          set -x  # Enable debugging
+# Copy the rest of the application code
+COPY . .
 
-          # Stop any existing containers to avoid conflicts
-          sudo docker stop frontend-app || echo "No running container named frontend-app"
-          sudo docker rm frontend-app || echo "No container named frontend-app to remove"
+# Expose the application port
+EXPOSE 3000
 
-          # Pull the latest Docker image
-          sudo docker pull khalidelmodir/frontend:latest
-
-          # Run the new container
-          sudo docker run -d --name frontend-app -p 3000:3000 khalidelmodir/frontend:latest
-
-          # Optionally, tail your app logs if you have set up logging
-          # sudo docker logs -f frontend-app || echo "No log files found"
-          EOF
+# Start the application in development mode
+CMD ["npm", "run", "dev"]
