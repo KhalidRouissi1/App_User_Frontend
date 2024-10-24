@@ -103,7 +103,7 @@ export default function VerifyCode() {
       <div className="bg-white p-8 rounded-lg w-full max-w-xl">
         <h1 className="text-3xl font-semibold text-center mb-3">Enter Verification Code</h1>
         <h4 className="text-sm font-normal text-center mb-4 text-grey">
-          We've sent a 6-digit code to your email
+          We&apos;ve sent a 6-digit code to your email
         </h4>
 
         <div className="flex justify-center mb-4">
@@ -132,7 +132,7 @@ export default function VerifyCode() {
 
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">
-            Didn't get the code?{' '}
+            Didn&apos;t get the code?{' '}
             <button
               onClick={handleResendCode}
               className={`text-blue-500 hover:underline cursor-pointer ${cooldown > 0 ? 'disabled' : ''}`}

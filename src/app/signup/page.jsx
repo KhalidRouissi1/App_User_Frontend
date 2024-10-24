@@ -8,9 +8,7 @@ export default function SignUp() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({}); 
-  const [signupSuccess, setSignupSuccess] = useState(null);
   const router = useRouter();
 
   const handleSignUp = () => {
